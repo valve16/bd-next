@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&display=swap" rel="stylesheet');
+
+.login_page
+{
+  position: fixed;
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  top: 0px;
+  background-color: rgba(186, 186, 186, 1);
+}
+
+.logo_image {
+  position: absolute;
+  left: 20px;
+  top: 20px
+}
+
+.login__main_text {
+  font: 500 24px 'Montserrat', sans-serif;
+  color: black;
+  text-shadow: 0 4px 2px rgba(0, 0, 0, 0.2);
+}
+
+.login_container {
+  width: 360px;
+  height: 460px;
+  margin: auto;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 8px;
+  border: 2px solid rgba(245, 245, 245, 1);
+  box-shadow: 0px 6px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 30px 24px 60px 24px;
+}
+
+.login_form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input_group {
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.input_group label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  display: block;
+  text-align: left;
+  text-shadow: 0 4px 2px rgba(0, 0, 0, 0.2);
+}
+
+.input_group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;;
+}
+
+.login_btn {
+  padding: 10px;
+  background-color: rgba(44, 44, 44, 1);
+  color: white;
+  border: none;
+  border-radius: 8px;;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.login_btn:hover {
+  background-color: black;
+}
+
+.left_container {
+  background: linear-gradient(to bottom left, rgba(78, 78, 78, 1), rgba(180, 180, 180, 1));
+  height: 100%;
+  width: 70%;
+}
+
+.right_container {
+  background-color: rgba(186, 186, 186, 1);
+  width: 30%;
+}
+.dance_image_section {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-end;
+}
+
+.text_about {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font: 400 32px 'Montserrat', sans-serif;
+  color: rgba(255, 255, 255, 1);
+  margin-top: 25%;
+  margin-bottom: 120px;
+}
