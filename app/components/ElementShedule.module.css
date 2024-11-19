@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&display=swap" rel="stylesheet');
+
+
+.container {
+    height: auto;
+    width: 330px;
+    border-radius: 20px;
+    background-color: rgba(236, 236, 236, 1);
+    margin: 25px 10px;
+    display: inline-table;
+
+}
+
+.day_sect {
+    font: 600 24px 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: rgba(236, 236, 236, 1);
+    background-color: rgba(125, 125, 125, 1);
+    height: 50px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.shd_sect {
+
+}
+
+.time {
+    font: 700 36px 'Montserrat', sans-serif;
+    text-align: center;
+}
+
+.name_lesson {
+    font: 400 36px 'Montserrat', sans-serif;
+    text-align: center;
+}

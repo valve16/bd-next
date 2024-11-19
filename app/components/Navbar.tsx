@@ -6,6 +6,7 @@ import logo_img from '../../public/secret_logo_sm.png'
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { FaUser, FaRegCalendarCheck, FaVideo, FaMusic, FaRocket} from "react-icons/fa";
 
 function Navbar() {
 
@@ -33,11 +34,21 @@ function Navbar() {
           <p className={styles.logo_text}>{pageTitle}</p>
         </div>
         <nav className={styles.path_list}>
-          <Link href='/dashboard/main_student' className={styles.path_element}>Моя страница</Link>
-          <Link href='/dashboard/shedule'  className={styles.path_element}>Расписание</Link>
-          <Link href='/dashboard/events'  className={styles.path_element}>Мероприятия</Link>
-          <Link href='/dashboard/video'  className={styles.path_element}>Видео</Link>
-          <Link href='/dashboard/music'  className={styles.path_element}>Музыка</Link>
+          <Link href='/dashboard/main_student' className={styles.path_element}>
+            <FaUser className={styles.icon}/>Моя страница
+          </Link>
+          <Link href='/dashboard/shedule' className={styles.path_element}>
+            <FaRegCalendarCheck className={styles.icon}/>Расписание
+          </Link>
+          <Link href='/dashboard/events' className={styles.path_element}>
+            <FaRocket className={styles.icon}/>Мероприятия
+          </Link>
+          <Link href='/dashboard/video' className={styles.path_element}>
+            <FaVideo className={styles.icon}/>Видео
+          </Link>
+          <Link href='/dashboard/music' className={styles.path_element}>
+            <FaMusic className={styles.icon}/>Музыка
+          </Link>
         </nav>
       </div>
     </>

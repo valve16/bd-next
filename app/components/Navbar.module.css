@@ -19,12 +19,13 @@
     font: 400 32px 'Montserrat', sans-serif;
     color: rgba(255, 255, 255, 1);
     margin: 175px 0 0 45px;
+    max-width: 420px;
 }
 
 
 .path_element
 {
-    padding: 10px 50px;
+    padding: 20px 50px;
 }
 
 
@@ -34,4 +35,7 @@
     color: rgba(255, 255, 255, 1);
     white-space: pre-wrap;
     margin: 20px;
+}
+.icon {
+    margin-right: 8px;
 }
