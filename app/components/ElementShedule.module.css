@@ -9,7 +9,7 @@
     background-color: rgba(236, 236, 236, 1);
     margin: 25px 10px;
     display: inline-table;
-
+position: relative;
 }
 
 .day_sect {
@@ -37,4 +37,13 @@
 .name_lesson {
     font: 400 36px 'Montserrat', sans-serif;
     text-align: center;
+}
+
+.edit_container {
+    position: absolute;
+    right: 20px;
+}
+.edit_element 
+{
+    margin: 5px
 }

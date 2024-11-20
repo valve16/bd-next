@@ -9,3 +9,11 @@
     top: 75px;
 
 }
+
+
+.create_btn {
+    font-size: 32px;
+    right: 40px;
+    bottom: -40px;
+    position:absolute;
+}

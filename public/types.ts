@@ -1,10 +1,14 @@
 // types.ts
 export interface Lesson {
-    time: string;
+    id: number;
+    startTime: string;
+    endTime: string;
     name: string;
 }
 
+
 export interface Day {
+    id: number;
     day: string;
     lessons: Lesson[];
 }
