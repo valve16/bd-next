@@ -1,0 +1,44 @@
+[
+    {
+        "groupId": "1",
+        "groupName": "Группа 1",
+        "schedule": [
+            {
+                "id": 1,
+                "day": "Понедельник",
+                "lessons": [
+                    { "id": 1, "startTime": "09:00", "endTime": "10:30", "name": "Математика" },
+                    { "id": 2, "startTime": "11:00", "endTime": "12:30", "name": "Физика" }
+                ]
+            },
+            {
+                "id": 2,
+                "day": "Вторник",
+                "lessons": [
+                    { "id": 3, "startTime": "09:00", "endTime": "10:30", "name": "История" },
+                    { "id": 4, "startTime": "11:00", "endTime": "12:30", "name": "Литература" }
+                ]
+            }
+        ]
+    },
+    {
+        "groupId": "2",
+        "groupName": "Группа 2",
+        "schedule": [
+            {
+                "id": 1,
+                "day": "Понедельник",
+                "lessons": [
+                    { "id": 5, "startTime": "10:00", "endTime": "11:30", "name": "Химия" }
+                ]
+            },
+            {
+                "id": 2,
+                "day": "Среда",
+                "lessons": [
+                    { "id": 6, "startTime": "12:00", "endTime": "13:30", "name": "Биология" }
+                ]
+            }
+        ]
+    }
+]

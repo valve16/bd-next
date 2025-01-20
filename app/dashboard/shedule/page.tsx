@@ -3,29 +3,42 @@ import Navbar from "@/app/components/Navbar";
 import gstyles from "../main_student/Main.module.css"
 import SheduleElement from "@/app/components/ElementShedule";
 import sheduleDataProps from "@/public/shedule.json"
-import { Day, Lesson } from "@/public/types";
+import { Day, Lesson, GroupSchedule } from "@/public/types";
 import styles from "./Page_shedule.module.css";
 import { FaBookMedical, FaWindowClose } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import groupSchedulesData from "@/public/groupshedule.json";
 
 export default function page_shedule() {
     const [schedule, setSchedule] = useState<Day[]>(sheduleDataProps);
+    const [selectedGroup, setSelectedGroup] = useState<string>(""); // Хранит выбранную группу
+    const [groupSchedules, setGroupSchedules] = useState<GroupSchedule[]>(groupSchedulesData);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newDay, setNewDay] = useState("");
     const [newLessons, setNewLessons] = useState<Lesson[]>([]);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
+    const [userRole, setUserRole] = useState<number>(0);
 
     const openModal = (index: number | null = null) => {
-        setCurrentDayIndex(index);
-        setIsModalOpen(true);
+        if (userRole === 1) { // Если роль пользователя 1, открываем модальное окно
+            setCurrentDayIndex(index);
+            setIsModalOpen(true);
+        } else {
+            alert("У вас нет доступа для добавления нового дня.");
+        }
     };
-
     const closeModal = () => {
         setCurrentDayIndex(null);
         setNewDay("");
         setNewLessons([]);
         setIsModalOpen(false);
     };
+
+    useEffect(() => {
+        if (userRole === 0) {
+            setSelectedGroup('1'); // Automatically set the group for role 0
+        }
+    }, [userRole]);
 
     const handleAddLesson = () => {
         setNewLessons([...newLessons, { id: Date.now(), startTime: "", endTime: "", name: "" }]);
@@ -39,23 +52,33 @@ export default function page_shedule() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Filter out lessons with empty fields
-        const filteredLessons = newLessons.filter(lesson =>
-            lesson.startTime.trim() !== "" &&
-            lesson.endTime.trim() !== "" &&
-            lesson.name.trim() !== ""
+        // Удаляем занятия с пустыми полями
+        const filteredLessons = newLessons.filter(
+            (lesson) =>
+                lesson.startTime.trim() !== "" &&
+                lesson.endTime.trim() !== "" &&
+                lesson.name.trim() !== ""
         );
 
-        // Check if there are any valid lessons and the day is not empty
-        if (filteredLessons.length > 0 && newDay.trim() !== "") {
-            const newScheduleItem = {
+        // Проверяем, что есть валидные занятия и указано название дня
+        if (filteredLessons.length > 0 && newDay.trim() !== "" && selectedGroup) {
+            const newScheduleItem: Day = {
                 id: Date.now(),
                 day: newDay,
-                lessons: filteredLessons
+                lessons: filteredLessons,
             };
 
-            setSchedule([...schedule, newScheduleItem]);
+            // Обновляем расписание для выбранной группы
+            setGroupSchedules((prevGroupSchedules) =>
+                prevGroupSchedules.map((group) =>
+                    group.groupId === selectedGroup
+                        ? {
+                            ...group,
+                            schedule: [...group.schedule, newScheduleItem],
+                        }
+                        : group
+                )
+            );
             closeModal();
         } else {
             alert("Please fill in all fields for at least one lesson and the day.");
@@ -69,25 +92,57 @@ export default function page_shedule() {
     };
 
     const handleDeleteDay = (id: number) => {
-        const newSchedule = schedule.filter(day => day.id !== id);
-        setSchedule(newSchedule);
+        setGroupSchedules((prevGroupSchedules) =>
+            prevGroupSchedules.map((group) =>
+                group.groupId === selectedGroup
+                    ? {
+                        ...group,
+                        schedule: group.schedule.filter((day) => day.id !== id),
+                    }
+                    : group
+            )
+        );
     };
 
+    const selectedGroupSchedule =
+        groupSchedules.find((group) => group.groupId === selectedGroup)?.schedule || [];
 
     return (
         <>
             <Navbar></Navbar>
             <div className={gstyles.container}>
-                <FaBookMedical className={gstyles.create_btn} onClick={() => openModal()} />
+                {userRole === 1 && (
+                    <FaBookMedical className={gstyles.create_btn} onClick={() => openModal()} />
+                )}
                 <div className={styles.ad}> См в ТГ </div>
+
+                {userRole === 1 && (
+                    <select
+                        value={selectedGroup}
+                        onChange={(e) => setSelectedGroup(e.target.value)}
+                        className={styles.group_selector}
+                    >
+                        <option value="">Выберите группу</option>
+                        {groupSchedules.map((group) => (
+                            <option key={group.groupId} value={group.groupId}>
+                                {group.groupName}
+                            </option>
+                        ))}
+                    </select>
+                )}
+
                 <div className={styles.day_container}>
-                    {schedule.map((day: Day) => (
-                        <SheduleElement key={day.id} day={day} onDelete={() => handleDeleteDay(day.id)} />
+                    {selectedGroupSchedule.map((day: Day) => (
+                        <SheduleElement
+                            key={day.id}
+                            day={day}
+                            onDelete={() => userRole === 1 && handleDeleteDay(day.id)}
+                        />
                     ))}
                 </div>
             </div>
 
-            {isModalOpen && (
+            {isModalOpen && userRole === 1 && (
                 <div className={styles.modal}>
                     <div className={styles.modal_content}>
                         <FaWindowClose className={styles.close} onClick={closeModal} />
@@ -135,7 +190,7 @@ export default function page_shedule() {
                                             />
                                         </label>
                                     </div>
-                                    <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(index)}/>
+                                    <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(index)} />
                                 </div>
                             ))}
                             <button type="submit">Добавить</button>

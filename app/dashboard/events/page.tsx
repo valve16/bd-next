@@ -1,12 +1,101 @@
 "use client";
 import Navbar from "@/app/components/Navbar";
 import gstyles from "../main_student/Main.module.css"
+import styles from "./Events.module.css"
+import eventsData from '@/public/events.json'
+import EventElement from "@/app/components/EventElement";
+import { useEffect, useState } from "react";
+import { FaBookMedical } from "react-icons/fa";
+import Modal from "./Modal"
+
+const fetchUserRole = async (userId: string) => {
+    try {
+        const response = await fetch(`/api/users/${userId}/role`);
+        const data = await response.json();
+        return data.role;
+    } catch (error) {
+        console.error("Ошибка при получении роли пользователя:", error);
+        return 1;
+    }
+};
 
 export default function page_events() {
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newEvent, setNewEvent] = useState({ date: "", time: "", description: "" });
+
+    const [userRole, setUserRole] = useState<number | null>(null);
+
+    useEffect(() => {
+        const userId = "some-user-id"; // Замените на актуальный идентификатор пользователя
+        fetchUserRole(userId).then(role => setUserRole(role));
+    }, []);
+    //setUserRole(0);
+
+    const handleAddEvent = () => {
+        const updatedEvents = [...events, { ...newEvent, id: events.length + 1 }];
+        setEvents(updatedEvents);
+        setNewEvent({ date: "", time: "", description: "" });
+        setIsModalOpen(false);
+    };
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
+    const [events, setEvents] = useState(eventsData.events);
+
+    const handleDelete = (id: number) => {
+        // Фильтруем события, исключая удаленное
+        const updatedEvents = events.filter(event => event.id !== id);
+        setEvents(updatedEvents);
+        console.log(`Удалить событие с ID: ${id}`);
+    };
+
     return (
         <>
             <Navbar></Navbar>
-            <div className={gstyles.container}>event</div>
+            <div className={gstyles.container}>
+                {userRole === 1 && (
+                    <FaBookMedical className={gstyles.create_btn} onClick={() => openModal()} />
+                )}
+                <div className={styles.header}>Список ближайших мероприятий</div>
+                <div className={styles.container_main}>
+                    {events.map((event, index) => (
+                        <EventElement
+                            key={event.id}
+                            event={event}
+                            index={index}
+                            onDelete={() => userRole === 1 && handleDelete(event.id)}
+                        />
+                    ))}
+                </div>
+                {isModalOpen &&  userRole === 1 &&  (
+                    <Modal>
+                        <div className={styles.modal_content}>
+                            <h2>Добавить новое мероприятие</h2>
+                            <input
+                                type="date"
+                                value={newEvent.date}
+                                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                                placeholder="Дата"
+                            />
+                            <input
+                                type="time"
+                                value={newEvent.time}
+                                onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                                placeholder="Время"
+                            />
+                            <textarea className={styles.textarea}
+                                value={newEvent.description}
+                                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                                placeholder="Описание"
+                            ></textarea>
+                            <button onClick={handleAddEvent}>Добавить</button>
+                            <button onClick={closeModal}>Закрыть</button>
+                        </div>
+                    </Modal>
+                )}
+            </div>
         </>
     )
 }

@@ -12,3 +12,20 @@ export interface Day {
     day: string;
     lessons: Lesson[];
 }
+
+export interface GroupSchedule {
+    groupId: string;
+    groupName: string; 
+    schedule: Day[]; 
+}
+
+export interface Events {
+    events: Event[];
+}
+
+export interface Event {
+    id: number;
+    date: string;
+    time: string;
+    description: string;
+}
