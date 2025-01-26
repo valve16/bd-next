@@ -52,23 +52,21 @@ export interface Group {
 // }
 
 export interface GroupEvent {
-    id: number; // Уникальный идентификатор группы
-    name: string; // Название группы
-    eventIds: number[]; // Список идентификаторов мероприятий, связанных с этой группой
+    id: number; 
+    name: string; 
+    eventIds: Event[];
 }
 
 export interface Event {
-    id: number; // Уникальный идентификатор мероприятия
-    date: string; // Дата мероприятия
-    time: string; // Время мероприятия
+    id: number; 
+    date: string; 
+    time: string; 
     name: string;
-    description: string; // Описание мероприятия
-    groupIds: number[]; // Список идентификаторов групп, для которых это мероприятие
+    description: string; 
 }
 
 export interface EventsData {
-    groups: GroupEvent[]; // Список групп
-    events: Event[]; // Список мероприятий
+    groups: GroupEvent[]; 
 }
 
 export interface StudentData {

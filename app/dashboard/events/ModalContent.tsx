@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Modal.module.css";
+import { Dispatch, SetStateAction } from "react";
 
 interface Group {
     id: number;
@@ -7,21 +8,20 @@ interface Group {
 }
 
 interface Event {
-    id: number | null;
+    id: number;
     date: string;
     time: string;
     name: string;
     description: string;
-    groupIds: number[];
 }
 
 interface ModalContentProps {
     editingEvent: Event | null;
     newEvent: Event;
-    setNewEvent: (event: Event) => void;
+    setNewEvent: Dispatch<SetStateAction<Event>>; // Обновляем тип setNewEvent
     handleAddEvent: () => void;
     closeModal: () => void;
-    groups: Group[]; // Добавляем группы для выбора
+    groups: Group[];
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -32,14 +32,6 @@ const ModalContent: React.FC<ModalContentProps> = ({
     closeModal,
     groups,
 }) => {
-    const handleGroupChange = (groupId: number) => {
-        const updatedGroupIds = newEvent.groupIds.includes(groupId)
-            ? newEvent.groupIds.filter(id => id !== groupId) // Убираем группу, если она уже выбрана
-            : [...newEvent.groupIds, groupId]; // Добавляем группу, если она не выбрана
-
-        setNewEvent({ ...newEvent, groupIds: updatedGroupIds });
-    };
-
     return (
         <div className={styles.modal_overlay}>
             <div className={styles.modal}>
@@ -68,20 +60,6 @@ const ModalContent: React.FC<ModalContentProps> = ({
                         onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                         placeholder="Описание"
                     ></textarea>
-
-                    <div>
-                        <h3>Выберите группы:</h3>
-                        {groups.map((group) => (
-                            <label key={group.id}>
-                                <input
-                                    type="checkbox"
-                                    checked={newEvent.groupIds.includes(group.id)}
-                                    onChange={() => handleGroupChange(group.id)}
-                                />
-                                {group.name}
-                            </label>
-                        ))}
-                    </div>
 
                     <button onClick={handleAddEvent}>{editingEvent ? "Сохранить" : "Добавить"}</button>
                     <button onClick={closeModal}>Закрыть</button>

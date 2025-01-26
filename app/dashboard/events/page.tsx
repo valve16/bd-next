@@ -7,7 +7,7 @@ import EventElement from "@/app/components/EventElement";
 import { useEffect, useState } from "react";
 import { FaBookMedical } from "react-icons/fa";
 import Modal from "./Modal"
-import { Event, GroupEvent, EventsData } from "@/public/types";
+import { Event, EventsData } from "@/public/types";
 import ModalContent from "./ModalContent";
 
 // const fetchUserRole = async (userId: string) => {
@@ -22,78 +22,83 @@ import ModalContent from "./ModalContent";
 // };
 
 export default function page_events() {
-
+    const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newEvent, setNewEvent] = useState<{ id: number | null; date: string; time: string; description: string; groupIds: number[]; name: string; }>({
-        id: null,
+    const [newEvent, setNewEvent] = useState<Event>({
+        id: 0,
         date: "",
-        name: "",
         time: "",
+        name: "",
         description: "",
-        groupIds: [],
     });
     const [userRole, setUserRole] = useState<number | null>(null);
-    const [editingEvent, setEditingEvent] = useState<Event | null>(null); 
-    const [events, setEvents] = useState(eventsData.events);
+    const [editingEvent, setEditingEvent] = useState<Event | null>(null);
     const [eventsDataState, setEventsDataState] = useState<EventsData>(eventsData);
-    
-    const openModal = (event: Event | null = null) => {
+
+ const openModal = (event: Event | null = null) => {
         if (userRole === 1) {
             if (event) {
                 setEditingEvent(event);
-                setNewEvent({ id: event.id, date: event.date, name: event.name, time: event.time, description: event.description, groupIds: event.groupIds });
+                setNewEvent(event);
             } else {
                 setEditingEvent(null);
-                setNewEvent({ id: null, name: "", date: "", time: "", description: "", groupIds: [] });
+                setNewEvent({ id: 0, date: "", time: "", name: "", description: "" });
             }
             setIsModalOpen(true);
         } else {
             alert("У вас нет доступа для добавления или редактирования мероприятий.");
         }
     };
-    
+
     const closeModal = () => {
         setEditingEvent(null);
-        setNewEvent({ id: null, name: "", date: "", time: "", description: "", groupIds: [] });
-        setIsModalOpen(false);
-    };
-    
-    useEffect(() => {
-        const role = localStorage.getItem('userRole');
-        if (role) {
-          setUserRole(parseInt(role, 10));
-        }
-    }, []);
-    
-    const handleAddEvent = () => {
-        if (editingEvent) {
-            // Редактируем существующее мероприятие
-            const updatedEvents = eventsDataState.events.map(event =>
-                event.id === editingEvent.id ? { ...newEvent, id: editingEvent.id } : event
-            );
-            setEventsDataState({ ...eventsDataState, events: updatedEvents });
-        } else {
-            // Добавляем новое мероприятие
-            const newEventWithId = { ...newEvent, id: eventsDataState.events.length + 1 };
-            setEventsDataState({ ...eventsDataState, events: [...eventsDataState.events, newEventWithId] });
-        }
-        setNewEvent({ id: null,  name: "", date: "", time: "", description: "", groupIds: [] });
+        setNewEvent({ id: 0, date: "", time: "", name: "", description: "" });
         setIsModalOpen(false);
     };
 
-    const handleDelete = (id: number) => {
-        const updatedEvents = eventsDataState.events.filter(event => event.id !== id);
-        setEventsDataState({
-            ...eventsDataState,
-            events: updatedEvents,
-        });
-        setEvents(updatedEvents); // Обновляем локальное состояние, если оно используется
-        console.log(`Удалено мероприятие с ID: ${id}`);
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        if (role) {
+            setUserRole(parseInt(role, 10));
+        }
+    }, []);
+
+    const handleAddEvent = () => {
+        if (editingEvent) {
+            const updatedGroups = eventsDataState.groups.map(group => ({
+                ...group,
+                eventIds: group.eventIds.map(event =>
+                    event.id === editingEvent.id ? { ...newEvent, id: editingEvent.id } : event
+                ),
+            }));
+            setEventsDataState({ ...eventsDataState, groups: updatedGroups });
+        } else {
+            const newEventWithId = { ...newEvent, id: Date.now() }; 
+            const updatedGroups = eventsDataState.groups.map(group => {
+                if (group.id === selectedGroup) {
+                    return { ...group, eventIds: [...group.eventIds, newEventWithId] };
+                }
+                return group;
+            });
+            setEventsDataState({ ...eventsDataState, groups: updatedGroups });
+        }
+        closeModal();
     };
-    
-    const selectedEvents = userRole === 0
-        ? eventsDataState.events.filter(event => event.groupIds.includes(1)) 
-        : eventsDataState.events; // Для роли 1 все мероприятия
+
+    const handleDelete = (eventId: number) => {
+        const updatedGroups = eventsDataState.groups.map(group => ({
+            ...group,
+            eventIds: group.eventIds.filter(event => event.id !== eventId),
+        }));
+        setEventsDataState({ ...eventsDataState, groups: updatedGroups });
+        console.log(`Удалено мероприятие с ID: ${eventId}`);
+    };
+
+    const defaultGroupId = eventsDataState.groups[0]?.id || null;
+
+    const currentGroupId = selectedGroup || defaultGroupId;
+
+    const selectedEvents = eventsDataState.groups.find(group => group.id === currentGroupId)?.eventIds || [];
 
     return (
         <>
@@ -103,6 +108,26 @@ export default function page_events() {
                     <FaBookMedical className={gstyles.create_btn} onClick={() => openModal()} />
                 )}
                 <div className={styles.header}>Список ближайших мероприятий</div>
+                {userRole === 1 && (
+                    <select
+                        value={selectedGroup || defaultGroupId || ""}
+                        onChange={(e) => {
+                            const selectedValue = e.target.value;
+                            if (selectedValue) {
+                                setSelectedGroup(parseInt(selectedValue, 10));
+                            } else {
+                                setSelectedGroup(null); 
+                            }
+                        }}
+                        className={styles.group_selector}>
+                        <option value="">Выберите группу</option>
+                        {eventsDataState.groups.map((group) => (
+                            <option key={group.id} value={group.id.toString()}>
+                                {group.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
                 <div className={styles.container_main}>
                     {selectedEvents.map((event, index) => (
                         <EventElement
@@ -110,11 +135,11 @@ export default function page_events() {
                             event={event}
                             index={index}
                             onDelete={() => userRole === 1 && handleDelete(event.id)}
-                            onEdit={() => userRole === 1 && openModal(event)} 
+                            onEdit={() => userRole === 1 && openModal(event)}
                         />
                     ))}
                 </div>
-                {isModalOpen &&  userRole === 1 &&  (
+                {isModalOpen && userRole === 1 && (
                     <Modal>
                         <ModalContent
                             editingEvent={editingEvent}
@@ -122,7 +147,7 @@ export default function page_events() {
                             setNewEvent={setNewEvent}
                             handleAddEvent={handleAddEvent}
                             closeModal={closeModal}
-                            groups={eventsDataState.groups} // Передаем группы в ModalContent
+                            groups={eventsDataState.groups} 
                         />
                     </Modal>
                 )}
