@@ -1,26 +1,25 @@
 import React from "react";
 import { FaWindowClose } from "react-icons/fa";
 import styles from "./Page_shedule.module.css";
+import { Lesson } from "@/public/types"; 
 
-interface Lesson {
-    id: number;
-    startTime: string;
-    endTime: string;
-    name: string;
-}
 
 interface ModalContentProps {
-    editingDay: { id: number; day: string; lessons: Lesson[] } | null;
+    editingDay: { id: number; dayOfWeek: number; lessons: Lesson[] } | null;
     newDay: string;
     newLessons: Lesson[];
     setNewDay: (day: string) => void;
     setNewLessons: (lessons: Lesson[]) => void;
     handleAddLesson: () => void;
-    handleLessonChange: <T extends keyof Lesson>(index: number, field: T, value: Lesson[T]) => void;
+    handleLessonChange: <T extends keyof Lesson>(
+      index: number,
+      field: T,
+      value: Lesson[T]
+    ) => void;
     deleteLesson: (index: number) => void;
     handleSubmit: (e: React.FormEvent) => void;
     closeModal: () => void;
-}
+  }
 
 const ModalContent: React.FC<ModalContentProps> = ({
     editingDay,
@@ -77,8 +76,8 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                     <input
                                         className={styles.input_l}
                                         type="text"
-                                        value={lesson.name}
-                                        onChange={(e) => handleLessonChange(index, 'name', e.target.value)}
+                                        value={lesson.lessonName}
+                                        onChange={(e) => handleLessonChange(index, 'lessonName', e.target.value)}
                                     />
                                 </label>
                             </div>

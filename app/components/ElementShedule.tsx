@@ -1,14 +1,18 @@
 import styles from "./ElementShedule.module.css"
-import { Day } from "@/public/types";
+import { Schedule } from "@/public/types";
 import { FaRegTrashAlt, FaEdit } from "react-icons/fa";
 
 interface SheduleElementProps {
-    day: Day;
+    day: Schedule;
     onDelete: () => void;
     onEdit: () => void; 
 }
 
-export default function SheduleElement({ day,  onDelete, onEdit }: SheduleElementProps) {
+export default function SheduleElement({ 
+    day,  
+    onDelete, 
+    onEdit 
+}: SheduleElementProps) {
     return (
         <div className={styles.container}>
             <div className={styles.edit_container}>
@@ -16,7 +20,7 @@ export default function SheduleElement({ day,  onDelete, onEdit }: SheduleElemen
                 <FaRegTrashAlt className={styles.edit_element} onClick={onDelete}/>
             </div>
             <div className={styles.day_sect}>
-                {day.day}
+                {day.dayOfWeek}
             </div>
             {day.lessons.map((lesson, lessonIndex) => (
                 <div key={lessonIndex} className={styles.shd_sect}>
@@ -24,7 +28,7 @@ export default function SheduleElement({ day,  onDelete, onEdit }: SheduleElemen
                         {lesson.startTime} - {lesson.endTime}
                     </div>
                     <div className={styles.name_lesson}>
-                        {lesson.name}
+                        {lesson.lessonName}
                     </div>
                 </div>
             ))}

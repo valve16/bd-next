@@ -3,7 +3,7 @@ import Navbar from "@/app/components/Navbar";
 import gstyles from "../main_student/Main.module.css"
 import SheduleElement from "@/app/components/ElementShedule";
 import sheduleDataProps from "@/public/shedule.json"
-import { Day, Lesson, GroupSchedule } from "@/public/types";
+import { Lesson, Schedule, Group } from "@/public/types";
 import styles from "./Page_shedule.module.css";
 import { FaBookMedical, FaWindowClose } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -11,21 +11,21 @@ import groupSchedulesData from "@/public/groupshedule.json";
 import ModalContent from "./modal";
 
 export default function page_shedule() {
-    const [schedule, setSchedule] = useState<Day[]>(sheduleDataProps);
-    const [selectedGroup, setSelectedGroup] = useState<string>(""); // Хранит выбранную группу
-    const [groupSchedules, setGroupSchedules] = useState<GroupSchedule[]>(groupSchedulesData);
+    const [selectedGroup, setSelectedGroup] = useState<string>("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newDay, setNewDay] = useState("");
     const [newLessons, setNewLessons] = useState<Lesson[]>([]);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
     const [userRole, setUserRole] = useState<number>(0);
-    const [editingDay, setEditingDay] = useState<Day | null>(null); 
+    const [editingDay, setEditingDay] = useState<Schedule | null>(null);
+    
+    const [groupSchedules, setGroupSchedules] = useState<Group[]>(groupSchedulesData);
 
-    const openModal = (day: Day | null = null) => {
+    const openModal = (day: Schedule | null = null) => {
         if (userRole === 1) {
             if (day) {
                 setEditingDay(day);
-                setNewDay(day.day);
+                setNewDay(day.dayOfWeek.toString()); // Преобразуем число в строку
                 setNewLessons(day.lessons);
             } else {
                 setEditingDay(null);
@@ -48,18 +48,18 @@ export default function page_shedule() {
     useEffect(() => {
         const role = localStorage.getItem('userRole');
         if (role) {
-          setUserRole(parseInt(role, 10));
+            setUserRole(parseInt(role, 10));
         }
-      }, []);
+    }, []);
 
     useEffect(() => {
         if (userRole === 0) {
-            setSelectedGroup('1'); 
+            setSelectedGroup('1');
         }
     }, [userRole]);
 
     const handleAddLesson = () => {
-        setNewLessons([...newLessons, { id: Date.now(), startTime: "", endTime: "", name: "" }]);
+        setNewLessons([...newLessons, { id: Date.now(), startTime: "", endTime: "", lessonName: "" }]);
     };
 
     const handleLessonChange = <T extends keyof Lesson>(index: number, field: T, value: Lesson[T]) => {
@@ -75,26 +75,26 @@ export default function page_shedule() {
             (lesson) =>
                 lesson.startTime.trim() !== "" &&
                 lesson.endTime.trim() !== "" &&
-                lesson.name.trim() !== ""
+                lesson.lessonName.trim() !== ""
         );
 
         if (filteredLessons.length > 0 && newDay.trim() !== "" && selectedGroup) {
-            const newScheduleItem: Day = {
+            const newScheduleItem: Schedule = {
                 id: editingDay ? editingDay.id : Date.now(),
-                day: newDay,
+                dayOfWeek: parseInt(newDay, 10),
                 lessons: filteredLessons,
             };
 
             setGroupSchedules((prevGroupSchedules) =>
                 prevGroupSchedules.map((group) =>
-                    group.groupId === selectedGroup
+                    group.id === parseInt(selectedGroup, 10)
                         ? {
                             ...group,
                             schedule: editingDay
-                                ? group.schedule.map((day) =>
+                                ? group.schedules.map((day) =>
                                     day.id === editingDay.id ? newScheduleItem : day
                                 )
-                                : [...group.schedule, newScheduleItem],
+                                : [...group.schedules, newScheduleItem],
                         }
                         : group
                 )
@@ -114,10 +114,10 @@ export default function page_shedule() {
     const handleDeleteDay = (id: number) => {
         setGroupSchedules((prevGroupSchedules) =>
             prevGroupSchedules.map((group) =>
-                group.groupId === selectedGroup
+                group.id === parseInt(selectedGroup, 10)
                     ? {
                         ...group,
-                        schedule: group.schedule.filter((day) => day.id !== id),
+                        schedule: group.schedules.filter((day) => day.id !== id),
                     }
                     : group
             )
@@ -125,7 +125,7 @@ export default function page_shedule() {
     };
 
     const selectedGroupSchedule =
-        groupSchedules.find((group) => group.groupId === selectedGroup)?.schedule || [];
+        groupSchedules.find((group) => group.id === parseInt(selectedGroup, 10))?.schedules || [];
 
     return (
         <>
@@ -144,15 +144,15 @@ export default function page_shedule() {
                     >
                         <option value="">Выберите группу</option>
                         {groupSchedules.map((group) => (
-                            <option key={group.groupId} value={group.groupId}>
-                                {group.groupName}
+                            <option key={group.id} value={group.id.toString()}>
+                                {group.name}
                             </option>
                         ))}
                     </select>
                 )}
 
                 <div className={styles.day_container}>
-                    {selectedGroupSchedule.map((day: Day) => (
+                    {selectedGroupSchedule.map((day: Schedule) => (
                         <SheduleElement
                             key={day.id}
                             day={day}
@@ -165,17 +165,17 @@ export default function page_shedule() {
 
             {isModalOpen && userRole === 1 && (
                 <ModalContent
-                editingDay={editingDay}
-                newDay={newDay}
-                newLessons={newLessons}
-                setNewDay={setNewDay}
-                setNewLessons={setNewLessons}
-                handleAddLesson={handleAddLesson}
-                handleLessonChange={handleLessonChange}
-                deleteLesson={deleteLesson}
-                handleSubmit={handleSubmit}
-                closeModal={closeModal}
-            />
+                    editingDay={editingDay}
+                    newDay={newDay}
+                    newLessons={newLessons}
+                    setNewDay={setNewDay}
+                    setNewLessons={setNewLessons}
+                    handleAddLesson={handleAddLesson}
+                    handleLessonChange={handleLessonChange}
+                    deleteLesson={deleteLesson}
+                    handleSubmit={handleSubmit}
+                    closeModal={closeModal}
+                />
             )}
         </>
     )

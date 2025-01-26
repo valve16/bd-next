@@ -1,0 +1,11 @@
+{
+    "name": "Иван Иванов",
+    "group": "Группа 666",
+    "timeInSecret": {
+      "years": 1,
+      "months": 1,
+      "days": 1
+    },
+    "score": 1,
+    "rating": 1
+  }
