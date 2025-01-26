@@ -50,7 +50,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
                             required
                         />
                     </label>
-                    {newLessons.map((lesson, index) => (
+                    {newLessons.map((lesson) => (
                         <div key={lesson.id} className={styles.lesson_container}>
                             <div className={styles.add_less}>
                                 <label className={styles.label}>
@@ -59,7 +59,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                         className={styles.input_l}
                                         type="text"
                                         value={lesson.startTime}
-                                        onChange={(e) => handleLessonChange(index, 'startTime', e.target.value)}
+                                        onChange={(e) => handleLessonChange(lesson.id, 'startTime', e.target.value)}
                                     />
                                 </label>
                                 <label className={styles.label}>
@@ -68,7 +68,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                         className={styles.input_l}
                                         type="text"
                                         value={lesson.endTime}
-                                        onChange={(e) => handleLessonChange(index, 'endTime', e.target.value)}
+                                        onChange={(e) => handleLessonChange(lesson.id, 'endTime', e.target.value)}
                                     />
                                 </label>
                                 <label className={styles.label}>
@@ -77,11 +77,11 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                         className={styles.input_l}
                                         type="text"
                                         value={lesson.lessonName}
-                                        onChange={(e) => handleLessonChange(index, 'lessonName', e.target.value)}
+                                        onChange={(e) => handleLessonChange(lesson.id, 'lessonName', e.target.value)}
                                     />
                                 </label>
                             </div>
-                            <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(index)} />
+                            <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(lesson.id)} />
                         </div>
                     ))}
                     <button type="submit">{editingDay ? "Сохранить" : "Добавить"}</button>

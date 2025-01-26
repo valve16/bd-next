@@ -16,7 +16,7 @@
           ]
         },
         {
-          "id": 0,
+          "id": 1,
           "dayOfWeek": 1,
           "lessons": [
             {
@@ -28,7 +28,7 @@
           ]
         },
         {
-          "id": 0,
+          "id": 2,
           "dayOfWeek": 0,
           "lessons": [
             {

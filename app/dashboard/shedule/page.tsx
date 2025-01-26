@@ -18,8 +18,8 @@ export default function page_shedule() {
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
     const [userRole, setUserRole] = useState<number>(0);
     const [editingDay, setEditingDay] = useState<Schedule | null>(null);
-    
-    const [groupSchedules, setGroupSchedules] = useState<Group[]>(groupSchedulesData);
+
+    const [groupSchedules, setGroupSchedules] = useState<Group[]>(groupSchedulesData); //
 
     const openModal = (day: Schedule | null = null) => {
         if (userRole === 1) {

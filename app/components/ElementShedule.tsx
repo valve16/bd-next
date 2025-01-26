@@ -22,8 +22,8 @@ export default function SheduleElement({
             <div className={styles.day_sect}>
                 {day.dayOfWeek}
             </div>
-            {day.lessons.map((lesson, lessonIndex) => (
-                <div key={lessonIndex} className={styles.shd_sect}>
+            {day.lessons.map((lesson) => (
+                <div key={lesson.id} className={styles.shd_sect}>
                     <div className={styles.time}>
                         {lesson.startTime} - {lesson.endTime}
                     </div>
