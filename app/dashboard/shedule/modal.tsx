@@ -1,7 +1,7 @@
 import React from "react";
 import { FaWindowClose } from "react-icons/fa";
 import styles from "./Page_shedule.module.css";
-import { Lesson } from "@/public/types"; 
+import { Lesson } from "@/public/types";
 
 
 interface ModalContentProps {
@@ -12,14 +12,14 @@ interface ModalContentProps {
     setNewLessons: (lessons: Lesson[]) => void;
     handleAddLesson: () => void;
     handleLessonChange: <T extends keyof Lesson>(
-      index: number,
-      field: T,
-      value: Lesson[T]
+        index: number,
+        field: T,
+        value: Lesson[T]
     ) => void;
     deleteLesson: (index: number) => void;
     handleSubmit: (e: React.FormEvent) => void;
     closeModal: () => void;
-  }
+}
 
 const ModalContent: React.FC<ModalContentProps> = ({
     editingDay,
@@ -50,7 +50,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
                             required
                         />
                     </label>
-                    {newLessons.map((lesson) => (
+                    {newLessons.map((lesson, index) => (
                         <div key={lesson.id} className={styles.lesson_container}>
                             <div className={styles.add_less}>
                                 <label className={styles.label}>
@@ -59,7 +59,9 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                         className={styles.input_l}
                                         type="text"
                                         value={lesson.startTime}
-                                        onChange={(e) => handleLessonChange(lesson.id, 'startTime', e.target.value)}
+                                        onChange={(e) =>
+                                            handleLessonChange(index, "startTime", e.target.value)
+                                        }
                                     />
                                 </label>
                                 <label className={styles.label}>
@@ -68,7 +70,9 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                         className={styles.input_l}
                                         type="text"
                                         value={lesson.endTime}
-                                        onChange={(e) => handleLessonChange(lesson.id, 'endTime', e.target.value)}
+                                        onChange={(e) =>
+                                            handleLessonChange(index, "endTime", e.target.value)
+                                        }
                                     />
                                 </label>
                                 <label className={styles.label}>
@@ -77,11 +81,16 @@ const ModalContent: React.FC<ModalContentProps> = ({
                                         className={styles.input_l}
                                         type="text"
                                         value={lesson.lessonName}
-                                        onChange={(e) => handleLessonChange(lesson.id, 'lessonName', e.target.value)}
+                                        onChange={(e) =>
+                                            handleLessonChange(index, "lessonName", e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
-                            <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(lesson.id)} />
+                            <FaWindowClose
+                                className={styles.del_less}
+                                onClick={() => deleteLesson(index)}
+                            />
                         </div>
                     ))}
                     <button type="submit">{editingDay ? "Сохранить" : "Добавить"}</button>
