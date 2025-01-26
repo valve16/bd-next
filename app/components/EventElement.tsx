@@ -21,7 +21,7 @@ export default function EventElement({ event, index, onDelete, onEdit }: EventEl
                 <FaEdit className={styles.edit_element} onClick={onEdit} />
                 <FaRegTrashAlt className={styles.edit_element} onClick={onDelete} />
             </div>
-            <div className={styles.day_sect} style={{  backgroundColor: dayColor }} >
+            <div className={styles.day_sect} style={{ backgroundColor: dayColor }} >
                 <div>
                     {event.date}
                 </div>
@@ -30,6 +30,9 @@ export default function EventElement({ event, index, onDelete, onEdit }: EventEl
                 </div>
             </div>
             <div className={styles.descr_sect}>
+                <div className="">
+                    {event.name}
+                </div>
                 <div className="">
                     {event.description}
                 </div>

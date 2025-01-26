@@ -4,6 +4,16 @@ import styles from "./Page_shedule.module.css";
 import { Lesson } from "@/public/types";
 
 
+const daysOfWeek = [
+    { id: 1, name: "Понедельник" },
+    { id: 2, name: "Вторник" },
+    { id: 3, name: "Среда" },
+    { id: 4, name: "Четверг" },
+    { id: 5, name: "Пятница" },
+    { id: 6, name: "Суббота" },
+    { id: 7, name: "Воскресенье" },
+];
+
 interface ModalContentProps {
     editingDay: { id: number; dayOfWeek: number; lessons: Lesson[] } | null;
     newDay: string;
@@ -19,6 +29,7 @@ interface ModalContentProps {
     deleteLesson: (index: number) => void;
     handleSubmit: (e: React.FormEvent) => void;
     closeModal: () => void;
+    //setEditState: () => void;
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -32,6 +43,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
     deleteLesson,
     handleSubmit,
     closeModal,
+    //setEditState,
 }) => {
     return (
         <div className={styles.modal}>
@@ -42,13 +54,19 @@ const ModalContent: React.FC<ModalContentProps> = ({
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <label className={styles.label}>
                         День недели:
-                        <input
+                        <select
                             className={styles.input}
-                            type="text"
                             value={newDay}
                             onChange={(e) => setNewDay(e.target.value)}
                             required
-                        />
+                        >
+                            <option value="">Выберите день</option>
+                            {daysOfWeek.map((day) => (
+                                <option key={day.id} value={day.id}>
+                                    {day.name}
+                                </option>
+                            ))}
+                        </select>
                     </label>
                     {newLessons.map((lesson, index) => (
                         <div key={lesson.id} className={styles.lesson_container}>

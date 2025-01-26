@@ -10,6 +10,7 @@ interface Event {
     id: number | null;
     date: string;
     time: string;
+    name: string;
     description: string;
     groupIds: number[];
 }
@@ -55,6 +56,12 @@ const ModalContent: React.FC<ModalContentProps> = ({
                         value={newEvent.time}
                         onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
                         placeholder="Время"
+                    />
+                    <input
+                        type="text"
+                        value={newEvent.name}
+                        onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+                        placeholder="Название мероприятия"
                     />
                     <textarea
                         value={newEvent.description}

@@ -18,7 +18,7 @@ export default function page_shedule() {
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
     const [userRole, setUserRole] = useState<number>(0);
     const [editingDay, setEditingDay] = useState<Schedule | null>(null);
-
+    const [editState, setEditState] = useState<number>(0);
     const [groupSchedules, setGroupSchedules] = useState<Group[]>(groupSchedulesData); //
 
     const openModal = (day: Schedule | null = null) => {
@@ -85,20 +85,25 @@ export default function page_shedule() {
                 lessons: filteredLessons,
             };
 
-            setGroupSchedules((prevGroupSchedules) =>
-                prevGroupSchedules.map((group) =>
-                    group.id === selectedGroup
-                        ? {
+            console.log(newScheduleItem)
+
+            setGroupSchedules((prevGroupSchedules) => {
+                const updatedSchedules = prevGroupSchedules.map((group) => {
+                    if (group.id === selectedGroup) {
+                        return {
                             ...group,
-                            schedule: editingDay
+                            schedules: editingDay
                                 ? group.schedules.map((day) =>
                                     day.id === editingDay.id ? newScheduleItem : day
                                 )
                                 : [...group.schedules, newScheduleItem],
-                        }
-                        : group
-                )
-            );
+                        };
+                    }
+                    return group;
+                });
+            
+                return [...updatedSchedules]; // Создаем новый массив
+            });
             closeModal();
         } else {
             alert("Please fill in all fields for at least one lesson and the day.");
@@ -117,7 +122,7 @@ export default function page_shedule() {
                 group.id === selectedGroup
                     ? {
                         ...group,
-                        schedule: group.schedules.filter((day) => day.id !== id),
+                        schedules: group.schedules.filter((day) => day.id !== id),
                     }
                     : group
             )
@@ -175,6 +180,7 @@ export default function page_shedule() {
                     deleteLesson={deleteLesson}
                     handleSubmit={handleSubmit}
                     closeModal={closeModal}
+                    //editState={setEditState}
                 />
             )}
         </>

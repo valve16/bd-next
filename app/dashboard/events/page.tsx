@@ -24,9 +24,10 @@ import ModalContent from "./ModalContent";
 export default function page_events() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newEvent, setNewEvent] = useState<{ id: number | null; date: string; time: string; description: string; groupIds: number[] }>({
+    const [newEvent, setNewEvent] = useState<{ id: number | null; date: string; time: string; description: string; groupIds: number[]; name: string; }>({
         id: null,
         date: "",
+        name: "",
         time: "",
         description: "",
         groupIds: [],
@@ -40,10 +41,10 @@ export default function page_events() {
         if (userRole === 1) {
             if (event) {
                 setEditingEvent(event);
-                setNewEvent({ id: event.id, date: event.date, time: event.time, description: event.description, groupIds: event.groupIds });
+                setNewEvent({ id: event.id, date: event.date, name: event.name, time: event.time, description: event.description, groupIds: event.groupIds });
             } else {
                 setEditingEvent(null);
-                setNewEvent({ id: null, date: "", time: "", description: "", groupIds: [] });
+                setNewEvent({ id: null, name: "", date: "", time: "", description: "", groupIds: [] });
             }
             setIsModalOpen(true);
         } else {
@@ -53,7 +54,7 @@ export default function page_events() {
     
     const closeModal = () => {
         setEditingEvent(null);
-        setNewEvent({ id: null, date: "", time: "", description: "", groupIds: [] });
+        setNewEvent({ id: null, name: "", date: "", time: "", description: "", groupIds: [] });
         setIsModalOpen(false);
     };
     
@@ -76,15 +77,20 @@ export default function page_events() {
             const newEventWithId = { ...newEvent, id: eventsDataState.events.length + 1 };
             setEventsDataState({ ...eventsDataState, events: [...eventsDataState.events, newEventWithId] });
         }
-        setNewEvent({ id: null, date: "", time: "", description: "", groupIds: [] });
+        setNewEvent({ id: null,  name: "", date: "", time: "", description: "", groupIds: [] });
         setIsModalOpen(false);
     };
 
     const handleDelete = (id: number) => {
-        const updatedEvents = events.filter(event => event.id !== id);
-        setEvents(updatedEvents);
-        console.log(`Удалить событие с ID: ${id}`);
+        const updatedEvents = eventsDataState.events.filter(event => event.id !== id);
+        setEventsDataState({
+            ...eventsDataState,
+            events: updatedEvents,
+        });
+        setEvents(updatedEvents); // Обновляем локальное состояние, если оно используется
+        console.log(`Удалено мероприятие с ID: ${id}`);
     };
+    
     const selectedEvents = userRole === 0
         ? eventsDataState.events.filter(event => event.groupIds.includes(1)) 
         : eventsDataState.events; // Для роли 1 все мероприятия

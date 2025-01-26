@@ -29,7 +29,7 @@
         },
         {
           "id": 2,
-          "dayOfWeek": 0,
+          "dayOfWeek": 2,
           "lessons": [
             {
               "id": 0,

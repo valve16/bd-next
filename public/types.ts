@@ -61,6 +61,7 @@ export interface Event {
     id: number; // Уникальный идентификатор мероприятия
     date: string; // Дата мероприятия
     time: string; // Время мероприятия
+    name: string;
     description: string; // Описание мероприятия
     groupIds: number[]; // Список идентификаторов групп, для которых это мероприятие
 }
