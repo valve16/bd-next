@@ -52,6 +52,7 @@ const Login = () => {
       );
 
       if (user) {
+        localStorage.setItem('userRole', user.role.toString()); // Сохраняем роль в LocalStorage
         // Если пользователь найден, перенаправляем на dashboard
         router.push("./dashboard/main_student");
       } else {

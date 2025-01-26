@@ -35,6 +35,13 @@ export default function page_shedule() {
     };
 
     useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        if (role) {
+          setUserRole(parseInt(role, 10));
+        }
+      }, []);
+      
+    useEffect(() => {
         if (userRole === 0) {
             setSelectedGroup('1'); // Automatically set the group for role 0
         }
