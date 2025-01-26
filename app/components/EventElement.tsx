@@ -6,18 +6,19 @@ interface EventElementProps {
     event: Event;
     index: number;
     onDelete: () => void;
+    onEdit: () => void; // Добавляем пропс для редактирования
 }
 
 const backgroundColors = ["rgba(255, 233, 207, 1)", "rgba(255, 215, 215, 1)", "rgba(251, 255, 202, 1)"]; // Пример цветов
 const dayColors = ["rgba(255, 207, 104, 1)", "rgba(250, 113, 113, 1)", "rgba(240, 255, 122, 1)"]; // Пример цветов
 
-export default function EventElement({ event, index, onDelete }: EventElementProps) {
+export default function EventElement({ event, index, onDelete, onEdit }: EventElementProps) {
     const backgroundColor = backgroundColors[index % backgroundColors.length];
     const dayColor = dayColors[index % dayColors.length];
     return (
         <div className={styles.container} style={{ backgroundColor }}>
             <div className={styles.edit_container}>
-                <FaEdit className={styles.edit_element} />
+                <FaEdit className={styles.edit_element} onClick={onEdit} />
                 <FaRegTrashAlt className={styles.edit_element} onClick={onDelete} />
             </div>
             <div className={styles.day_sect} style={{  backgroundColor: dayColor }} >
