@@ -11,7 +11,7 @@ import groupSchedulesData from "@/public/groupshedule.json";
 import ModalContent from "./modal";
 
 export default function page_shedule() {
-    const [selectedGroup, setSelectedGroup] = useState<string>("");
+    const [selectedGroup, setSelectedGroup] = useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newDay, setNewDay] = useState("");
     const [newLessons, setNewLessons] = useState<Lesson[]>([]);
@@ -54,7 +54,7 @@ export default function page_shedule() {
 
     useEffect(() => {
         if (userRole === 0) {
-            setSelectedGroup('1');
+            setSelectedGroup(1);
         }
     }, [userRole]);
 
@@ -87,7 +87,7 @@ export default function page_shedule() {
 
             setGroupSchedules((prevGroupSchedules) =>
                 prevGroupSchedules.map((group) =>
-                    group.id === parseInt(selectedGroup, 10)
+                    group.id === selectedGroup
                         ? {
                             ...group,
                             schedule: editingDay
@@ -114,7 +114,7 @@ export default function page_shedule() {
     const handleDeleteDay = (id: number) => {
         setGroupSchedules((prevGroupSchedules) =>
             prevGroupSchedules.map((group) =>
-                group.id === parseInt(selectedGroup, 10)
+                group.id === selectedGroup
                     ? {
                         ...group,
                         schedule: group.schedules.filter((day) => day.id !== id),
@@ -125,7 +125,7 @@ export default function page_shedule() {
     };
 
     const selectedGroupSchedule =
-        groupSchedules.find((group) => group.id === parseInt(selectedGroup, 10))?.schedules || [];
+        groupSchedules.find((group) => group.id === selectedGroup)?.schedules || [];
 
     return (
         <>
@@ -139,7 +139,7 @@ export default function page_shedule() {
                 {userRole === 1 && (
                     <select
                         value={selectedGroup}
-                        onChange={(e) => setSelectedGroup(e.target.value)}
+                        onChange={(e) => setSelectedGroup(parseInt(e.target.value, 10))}
                         className={styles.group_selector}
                     >
                         <option value="">Выберите группу</option>
