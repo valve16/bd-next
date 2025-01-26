@@ -2,12 +2,13 @@
 import Navbar from "@/app/components/Navbar";
 import gstyles from "../main_student/Main.module.css"
 import styles from "./Events.module.css"
-import eventsData from '@/public/events.json'
+import eventsData from '@/public/groupevents.json'
 import EventElement from "@/app/components/EventElement";
 import { useEffect, useState } from "react";
 import { FaBookMedical } from "react-icons/fa";
 import Modal from "./Modal"
-import { Event } from "@/public/types";
+import { Event, GroupEvent, EventsData } from "@/public/types";
+import ModalContent from "./ModalContent";
 
 // const fetchUserRole = async (userId: string) => {
 //     try {
@@ -23,31 +24,26 @@ import { Event } from "@/public/types";
 export default function page_events() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newEvent, setNewEvent] = useState({ id: null, date: "", time: "", description: "" });
-
+    const [newEvent, setNewEvent] = useState<{ id: number | null; date: string; time: string; description: string; groupIds: number[] }>({
+        id: null,
+        date: "",
+        time: "",
+        description: "",
+        groupIds: [],
+    });
     const [userRole, setUserRole] = useState<number | null>(null);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null); 
     const [events, setEvents] = useState(eventsData.events);
-    // useEffect(() => {
-    //     const userId = "some-user-id"; // Замените на актуальный идентификатор пользователя
-    //     fetchUserRole(userId).then(role => setUserRole(role));
-    // }, []);
-    //setUserRole(0);
-
-    
-    // const openModal = () => setIsModalOpen(true);
-    // const closeModal = () => setIsModalOpen(false);
+    const [eventsDataState, setEventsDataState] = useState<EventsData>(eventsData);
     
     const openModal = (event: Event | null = null) => {
         if (userRole === 1) {
             if (event) {
-                // Если передано мероприятие, открываем модальное окно для редактирования
                 setEditingEvent(event);
-                setNewEvent({ id: event.id, date: event.date, time: event.time, description: event.description });
+                setNewEvent({ id: event.id, date: event.date, time: event.time, description: event.description, groupIds: event.groupIds });
             } else {
-                // Иначе открываем для добавления нового мероприятия
                 setEditingEvent(null);
-                setNewEvent({ id: null, date: "", time: "", description: "" });
+                setNewEvent({ id: null, date: "", time: "", description: "", groupIds: [] });
             }
             setIsModalOpen(true);
         } else {
@@ -57,7 +53,7 @@ export default function page_events() {
     
     const closeModal = () => {
         setEditingEvent(null);
-        setNewEvent({ id: null, date: "", time: "", description: "" });
+        setNewEvent({ id: null, date: "", time: "", description: "", groupIds: [] });
         setIsModalOpen(false);
     };
     
@@ -71,25 +67,27 @@ export default function page_events() {
     const handleAddEvent = () => {
         if (editingEvent) {
             // Редактируем существующее мероприятие
-            const updatedEvents = events.map(event =>
+            const updatedEvents = eventsDataState.events.map(event =>
                 event.id === editingEvent.id ? { ...newEvent, id: editingEvent.id } : event
             );
-            setEvents(updatedEvents);
+            setEventsDataState({ ...eventsDataState, events: updatedEvents });
         } else {
             // Добавляем новое мероприятие
-            const updatedEvents = [...events, { ...newEvent, id: events.length + 1 }];
-            setEvents(updatedEvents);
+            const newEventWithId = { ...newEvent, id: eventsDataState.events.length + 1 };
+            setEventsDataState({ ...eventsDataState, events: [...eventsDataState.events, newEventWithId] });
         }
-        setNewEvent({ id: null, date: "", time: "", description: "" });
+        setNewEvent({ id: null, date: "", time: "", description: "", groupIds: [] });
         setIsModalOpen(false);
     };
 
     const handleDelete = (id: number) => {
-        // Фильтруем события, исключая удаленное
         const updatedEvents = events.filter(event => event.id !== id);
         setEvents(updatedEvents);
         console.log(`Удалить событие с ID: ${id}`);
     };
+    const selectedEvents = userRole === 0
+        ? eventsDataState.events.filter(event => event.groupIds.includes(1)) 
+        : eventsDataState.events; // Для роли 1 все мероприятия
 
     return (
         <>
@@ -100,7 +98,7 @@ export default function page_events() {
                 )}
                 <div className={styles.header}>Список ближайших мероприятий</div>
                 <div className={styles.container_main}>
-                    {events.map((event, index) => (
+                    {selectedEvents.map((event, index) => (
                         <EventElement
                             key={event.id}
                             event={event}
@@ -112,28 +110,14 @@ export default function page_events() {
                 </div>
                 {isModalOpen &&  userRole === 1 &&  (
                     <Modal>
-                        <div className={styles.modal_content}>
-                            <h2>{editingEvent ? "Редактировать мероприятие" : "Добавить новое мероприятие"}</h2>
-                            <input
-                                type="date"
-                                value={newEvent.date}
-                                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                                placeholder="Дата"
-                            />
-                            <input
-                                type="time"
-                                value={newEvent.time}
-                                onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
-                                placeholder="Время"
-                            />
-                            <textarea className={styles.textarea}
-                                value={newEvent.description}
-                                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                                placeholder="Описание"
-                            ></textarea>
-                            <button onClick={handleAddEvent}>{editingEvent ? "Сохранить" : "Добавить"}</button>
-                            <button onClick={closeModal}>Закрыть</button>
-                        </div>
+                        <ModalContent
+                            editingEvent={editingEvent}
+                            newEvent={newEvent}
+                            setNewEvent={setNewEvent}
+                            handleAddEvent={handleAddEvent}
+                            closeModal={closeModal}
+                            groups={eventsDataState.groups} // Передаем группы в ModalContent
+                        />
                     </Modal>
                 )}
             </div>

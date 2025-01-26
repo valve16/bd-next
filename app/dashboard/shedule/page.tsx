@@ -8,6 +8,7 @@ import styles from "./Page_shedule.module.css";
 import { FaBookMedical, FaWindowClose } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import groupSchedulesData from "@/public/groupshedule.json";
+import ModalContent from "./modal";
 
 export default function page_shedule() {
     const [schedule, setSchedule] = useState<Day[]>(sheduleDataProps);
@@ -23,12 +24,10 @@ export default function page_shedule() {
     const openModal = (day: Day | null = null) => {
         if (userRole === 1) {
             if (day) {
-                // Если передан день, открываем модальное окно для редактирования
                 setEditingDay(day);
                 setNewDay(day.day);
                 setNewLessons(day.lessons);
             } else {
-                // Иначе открываем для добавления нового дня
                 setEditingDay(null);
                 setNewDay("");
                 setNewLessons([]);
@@ -81,7 +80,7 @@ export default function page_shedule() {
 
         if (filteredLessons.length > 0 && newDay.trim() !== "" && selectedGroup) {
             const newScheduleItem: Day = {
-                id: editingDay ? editingDay.id : Date.now(), // Если редактируем, сохраняем старый ID
+                id: editingDay ? editingDay.id : Date.now(),
                 day: newDay,
                 lessons: filteredLessons,
             };
@@ -165,62 +164,18 @@ export default function page_shedule() {
             </div>
 
             {isModalOpen && userRole === 1 && (
-                <div className={styles.modal}>
-                    <div className={styles.modal_content}>
-                        <FaWindowClose className={styles.close} onClick={closeModal} />
-                        <h2>{editingDay ? "Редактировать день" : "Добавить новый день"}</h2>
-                        <h2>Добавить новый день</h2>
-                        <form onSubmit={handleSubmit} className={styles.form}>
-                            <label className={styles.label}>
-                                День недели:
-                                <input
-                                    className={styles.input}
-                                    type="text"
-                                    value={newDay}
-                                    onChange={(e) => setNewDay(e.target.value)}
-                                    required
-                                />
-                            </label>
-                            {newLessons.map((lesson, index) => (
-                                <div key={lesson.id} className={styles.lesson_container}>
-                                    <div className={styles.add_less}>
-                                        <label className={styles.label}>
-                                            Время начала:
-                                            <input
-                                                className={styles.input_l}
-                                                type="text"
-                                                value={lesson.startTime}
-                                                onChange={(e) => handleLessonChange(index, 'startTime', e.target.value)}
-                                            />
-                                        </label>
-                                        <label className={styles.label}>
-                                            Время окончания:
-                                            <input
-                                                className={styles.input_l}
-                                                type="text"
-                                                value={lesson.endTime}
-                                                onChange={(e) => handleLessonChange(index, 'endTime', e.target.value)}
-                                            />
-                                        </label>
-                                        <label className={styles.label}>
-                                            Название занятия:
-                                            <input
-                                                className={styles.input_l}
-                                                type="text"
-                                                value={lesson.name}
-                                                onChange={(e) => handleLessonChange(index, 'name', e.target.value)}
-
-                                            />
-                                        </label>
-                                    </div>
-                                    <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(index)} />
-                                </div>
-                            ))}
-                            <button type="submit">{editingDay ? "Сохранить" : "Добавить"}</button>
-                            <button type="button" onClick={handleAddLesson}>Добавить занятие</button>
-                        </form>
-                    </div>
-                </div>
+                <ModalContent
+                editingDay={editingDay}
+                newDay={newDay}
+                newLessons={newLessons}
+                setNewDay={setNewDay}
+                setNewLessons={setNewLessons}
+                handleAddLesson={handleAddLesson}
+                handleLessonChange={handleLessonChange}
+                deleteLesson={deleteLesson}
+                handleSubmit={handleSubmit}
+                closeModal={closeModal}
+            />
             )}
         </>
     )
