@@ -18,15 +18,27 @@ export default function page_shedule() {
     const [newLessons, setNewLessons] = useState<Lesson[]>([]);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
     const [userRole, setUserRole] = useState<number>(0);
+    const [editingDay, setEditingDay] = useState<Day | null>(null); 
 
-    const openModal = (index: number | null = null) => {
-        if (userRole === 1) { // Если роль пользователя 1, открываем модальное окно
-            setCurrentDayIndex(index);
+    const openModal = (day: Day | null = null) => {
+        if (userRole === 1) {
+            if (day) {
+                // Если передан день, открываем модальное окно для редактирования
+                setEditingDay(day);
+                setNewDay(day.day);
+                setNewLessons(day.lessons);
+            } else {
+                // Иначе открываем для добавления нового дня
+                setEditingDay(null);
+                setNewDay("");
+                setNewLessons([]);
+            }
             setIsModalOpen(true);
         } else {
-            alert("У вас нет доступа для добавления нового дня.");
+            alert("У вас нет доступа для добавления или редактирования дня.");
         }
     };
+
     const closeModal = () => {
         setCurrentDayIndex(null);
         setNewDay("");
@@ -40,10 +52,10 @@ export default function page_shedule() {
           setUserRole(parseInt(role, 10));
         }
       }, []);
-      
+
     useEffect(() => {
         if (userRole === 0) {
-            setSelectedGroup('1'); // Automatically set the group for role 0
+            setSelectedGroup('1'); 
         }
     }, [userRole]);
 
@@ -57,9 +69,9 @@ export default function page_shedule() {
         setNewLessons(updatedLessons);
     };
 
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Удаляем занятия с пустыми полями
         const filteredLessons = newLessons.filter(
             (lesson) =>
                 lesson.startTime.trim() !== "" &&
@@ -67,21 +79,23 @@ export default function page_shedule() {
                 lesson.name.trim() !== ""
         );
 
-        // Проверяем, что есть валидные занятия и указано название дня
         if (filteredLessons.length > 0 && newDay.trim() !== "" && selectedGroup) {
             const newScheduleItem: Day = {
-                id: Date.now(),
+                id: editingDay ? editingDay.id : Date.now(), // Если редактируем, сохраняем старый ID
                 day: newDay,
                 lessons: filteredLessons,
             };
 
-            // Обновляем расписание для выбранной группы
             setGroupSchedules((prevGroupSchedules) =>
                 prevGroupSchedules.map((group) =>
                     group.groupId === selectedGroup
                         ? {
                             ...group,
-                            schedule: [...group.schedule, newScheduleItem],
+                            schedule: editingDay
+                                ? group.schedule.map((day) =>
+                                    day.id === editingDay.id ? newScheduleItem : day
+                                )
+                                : [...group.schedule, newScheduleItem],
                         }
                         : group
                 )
@@ -144,6 +158,7 @@ export default function page_shedule() {
                             key={day.id}
                             day={day}
                             onDelete={() => userRole === 1 && handleDeleteDay(day.id)}
+                            onEdit={() => userRole === 1 && openModal(day)}
                         />
                     ))}
                 </div>
@@ -153,6 +168,7 @@ export default function page_shedule() {
                 <div className={styles.modal}>
                     <div className={styles.modal_content}>
                         <FaWindowClose className={styles.close} onClick={closeModal} />
+                        <h2>{editingDay ? "Редактировать день" : "Добавить новый день"}</h2>
                         <h2>Добавить новый день</h2>
                         <form onSubmit={handleSubmit} className={styles.form}>
                             <label className={styles.label}>
@@ -200,7 +216,7 @@ export default function page_shedule() {
                                     <FaWindowClose className={styles.del_less} onClick={() => deleteLesson(index)} />
                                 </div>
                             ))}
-                            <button type="submit">Добавить</button>
+                            <button type="submit">{editingDay ? "Сохранить" : "Добавить"}</button>
                             <button type="button" onClick={handleAddLesson}>Добавить занятие</button>
                         </form>
                     </div>

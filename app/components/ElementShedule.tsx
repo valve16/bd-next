@@ -5,13 +5,14 @@ import { FaRegTrashAlt, FaEdit } from "react-icons/fa";
 interface SheduleElementProps {
     day: Day;
     onDelete: () => void;
+    onEdit: () => void; 
 }
 
-export default function SheduleElement({ day,  onDelete }: SheduleElementProps) {
+export default function SheduleElement({ day,  onDelete, onEdit }: SheduleElementProps) {
     return (
         <div className={styles.container}>
             <div className={styles.edit_container}>
-                <FaEdit className={styles.edit_element}/>
+                <FaEdit className={styles.edit_element} onClick={onEdit}/>
                 <FaRegTrashAlt className={styles.edit_element} onClick={onDelete}/>
             </div>
             <div className={styles.day_sect}>
