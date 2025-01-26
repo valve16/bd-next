@@ -8,16 +8,16 @@ import { useEffect, useState } from "react";
 import { FaBookMedical } from "react-icons/fa";
 import Modal from "./Modal"
 
-const fetchUserRole = async (userId: string) => {
-    try {
-        const response = await fetch(`/api/users/${userId}/role`);
-        const data = await response.json();
-        return data.role;
-    } catch (error) {
-        console.error("Ошибка при получении роли пользователя:", error);
-        return 1;
-    }
-};
+// const fetchUserRole = async (userId: string) => {
+//     try {
+//         const response = await fetch(`/api/users/${userId}/role`);
+//         const data = await response.json();
+//         return data.role;
+//     } catch (error) {
+//         console.error("Ошибка при получении роли пользователя:", error);
+//         return 1;
+//     }
+// };
 
 export default function page_events() {
 
@@ -26,10 +26,10 @@ export default function page_events() {
 
     const [userRole, setUserRole] = useState<number | null>(null);
 
-    useEffect(() => {
-        const userId = "some-user-id"; // Замените на актуальный идентификатор пользователя
-        fetchUserRole(userId).then(role => setUserRole(role));
-    }, []);
+    // useEffect(() => {
+    //     const userId = "some-user-id"; // Замените на актуальный идентификатор пользователя
+    //     fetchUserRole(userId).then(role => setUserRole(role));
+    // }, []);
     //setUserRole(0);
 
     const handleAddEvent = () => {
@@ -43,6 +43,13 @@ export default function page_events() {
     const closeModal = () => setIsModalOpen(false);
 
     const [events, setEvents] = useState(eventsData.events);
+
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        if (role) {
+          setUserRole(parseInt(role, 10));
+        }
+      }, []);
 
     const handleDelete = (id: number) => {
         // Фильтруем события, исключая удаленное
