@@ -22,7 +22,9 @@ import ModalContent from "./ModalContent";
 // };
 
 export default function page_events() {
-    const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+
+    const [eventsDataState, setEventsDataState] = useState<EventsData>(eventsData);
+    const [selectedGroup, setSelectedGroup] = useState<number | null>(eventsDataState.groups[0]?.id || null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newEvent, setNewEvent] = useState<Event>({
         id: 0,
@@ -33,7 +35,6 @@ export default function page_events() {
     });
     const [userRole, setUserRole] = useState<number | null>(null);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-    const [eventsDataState, setEventsDataState] = useState<EventsData>(eventsData);
 
  const openModal = (event: Event | null = null) => {
         if (userRole === 1) {
@@ -67,7 +68,7 @@ export default function page_events() {
         if (editingEvent) {
             const updatedGroups = eventsDataState.groups.map(group => ({
                 ...group,
-                eventIds: group.eventIds.map(event =>
+                events: group.events.map(event =>
                     event.id === editingEvent.id ? { ...newEvent, id: editingEvent.id } : event
                 ),
             }));
@@ -76,11 +77,12 @@ export default function page_events() {
             const newEventWithId = { ...newEvent, id: Date.now() }; 
             const updatedGroups = eventsDataState.groups.map(group => {
                 if (group.id === selectedGroup) {
-                    return { ...group, eventIds: [...group.eventIds, newEventWithId] };
+                    return { ...group, events: [...group.events, newEventWithId] };
                 }
                 return group;
             });
             setEventsDataState({ ...eventsDataState, groups: updatedGroups });
+            console.log(`Добавлено мероприятие с ID: ${selectedGroup}`);
         }
         closeModal();
     };
@@ -88,7 +90,7 @@ export default function page_events() {
     const handleDelete = (eventId: number) => {
         const updatedGroups = eventsDataState.groups.map(group => ({
             ...group,
-            eventIds: group.eventIds.filter(event => event.id !== eventId),
+            events: group.events.filter(event => event.id !== eventId),
         }));
         setEventsDataState({ ...eventsDataState, groups: updatedGroups });
         console.log(`Удалено мероприятие с ID: ${eventId}`);
@@ -98,7 +100,7 @@ export default function page_events() {
 
     const currentGroupId = selectedGroup || defaultGroupId;
 
-    const selectedEvents = eventsDataState.groups.find(group => group.id === currentGroupId)?.eventIds || [];
+    const selectedEvents = eventsDataState.groups.find(group => group.id === currentGroupId)?.events || [];
 
     return (
         <>

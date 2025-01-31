@@ -27,6 +27,12 @@ export interface Lesson {
     endTime: string; 
   };
   
+  // Группа
+export interface Group {
+    id: number; 
+    name: string; 
+    schedules: Schedule[]; 
+  }
   // Расписание на день
   export interface Schedule  {
     id: number; 
@@ -34,12 +40,6 @@ export interface Lesson {
     lessons: Lesson[]; 
   }
 
-  // Группа
-export interface Group {
-    id: number; 
-    name: string; 
-    schedules: Schedule[]; 
-}
 // export interface Events {
 //     events: Event[];
 // }
@@ -51,10 +51,14 @@ export interface Group {
 //     description: string;
 // }
 
+export interface EventsData {
+    groups: GroupEvent[]; 
+}
+
 export interface GroupEvent {
     id: number; 
     name: string; 
-    eventIds: Event[];
+    events: Event[]; //eventIds замени на events
 }
 
 export interface Event {
@@ -63,10 +67,6 @@ export interface Event {
     time: string; 
     name: string;
     description: string; 
-}
-
-export interface EventsData {
-    groups: GroupEvent[]; 
 }
 
 export interface StudentData {
