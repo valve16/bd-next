@@ -11,12 +11,12 @@ const Main = () => {
       {/* <h1>Main</h1> */}
       <Image src={main_img} alt="Main" className={styles.fullscreen_image} />
       <Image src={logo_img} alt="Logo" className={styles.logo_image} />
-      <div className={styles.main_btn}>
+      <div className={styles.btn_section}>
         <Link href="/login">
-          <button type="submit" >Войти</button>
+          <button type="submit" className={styles.main_btn} >Войти</button>
         </Link>
         <Link href="/register">
-          <button type="submit" >Зарегистрироваться</button>
+          <button type="submit" className={styles.main_btn}>Зарегистрироваться</button>
         </Link>
       </div>
       <div className={styles.text_container}>

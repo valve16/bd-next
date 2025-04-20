@@ -7,7 +7,7 @@ import EventElement from "@/app/components/EventElement";
 import { useEffect, useState } from "react";
 import { FaBookMedical } from "react-icons/fa";
 import Modal from "./Modal"
-import { Event, EventsData } from "@/public/types";
+import { Event, EventsData, GroupEvent } from "@/public/types";
 import ModalContent from "./ModalContent";
 
 // const fetchUserRole = async (userId: string) => {
@@ -23,8 +23,8 @@ import ModalContent from "./ModalContent";
 
 export default function page_events() {
 
-    const [eventsDataState, setEventsDataState] = useState<EventsData>(eventsData);
-    const [selectedGroup, setSelectedGroup] = useState<number | null>(eventsDataState.groups[0]?.id || null);
+    const [eventsDataState, setEventsDataState] = useState<GroupEvent[]>(eventsData);
+    const [selectedGroup, setSelectedGroup] = useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newEvent, setNewEvent] = useState<Event>({
         id: 0,
@@ -66,41 +66,41 @@ export default function page_events() {
 
     const handleAddEvent = () => {
         if (editingEvent) {
-            const updatedGroups = eventsDataState.groups.map(group => ({
+            const updatedGroups = eventsDataState.map(group => ({
                 ...group,
                 events: group.events.map(event =>
                     event.id === editingEvent.id ? { ...newEvent, id: editingEvent.id } : event
                 ),
             }));
-            setEventsDataState({ ...eventsDataState, groups: updatedGroups });
+            setEventsDataState(updatedGroups);
         } else {
             const newEventWithId = { ...newEvent, id: Date.now() }; 
-            const updatedGroups = eventsDataState.groups.map(group => {
+            const updatedGroups = eventsDataState.map(group => {
                 if (group.id === selectedGroup) {
                     return { ...group, events: [...group.events, newEventWithId] };
                 }
                 return group;
             });
-            setEventsDataState({ ...eventsDataState, groups: updatedGroups });
-            console.log(`Добавлено мероприятие с ID: ${selectedGroup}`);
+            setEventsDataState(updatedGroups);
+            console.log(`Добавлено мероприятие с ID: ${newEventWithId.id}`);
         }
         closeModal();
     };
 
     const handleDelete = (eventId: number) => {
-        const updatedGroups = eventsDataState.groups.map(group => ({
+        const updatedGroups = eventsDataState.map(group => ({
             ...group,
             events: group.events.filter(event => event.id !== eventId),
         }));
-        setEventsDataState({ ...eventsDataState, groups: updatedGroups });
+        setEventsDataState(updatedGroups );
         console.log(`Удалено мероприятие с ID: ${eventId}`);
     };
 
-    const defaultGroupId = eventsDataState.groups[0]?.id || null;
+    const defaultGroupId = eventsDataState[0]?.id || null;
 
     const currentGroupId = selectedGroup || defaultGroupId;
 
-    const selectedEvents = eventsDataState.groups.find(group => group.id === currentGroupId)?.events || [];
+    const selectedEvents = eventsDataState.find(group => group.id === currentGroupId)?.events || [];
 
     return (
         <>
@@ -118,12 +118,12 @@ export default function page_events() {
                             if (selectedValue) {
                                 setSelectedGroup(parseInt(selectedValue, 10));
                             } else {
-                                setSelectedGroup(null); 
+                                setSelectedGroup(1); 
                             }
                         }}
                         className={styles.group_selector}>
                         <option value="">Выберите группу</option>
-                        {eventsDataState.groups.map((group) => (
+                        {eventsDataState.map((group) => (
                             <option key={group.id} value={group.id.toString()}>
                                 {group.name}
                             </option>
@@ -149,7 +149,7 @@ export default function page_events() {
                             setNewEvent={setNewEvent}
                             handleAddEvent={handleAddEvent}
                             closeModal={closeModal}
-                            groups={eventsDataState.groups} 
+                            groups={eventsDataState} 
                         />
                     </Modal>
                 )}
